@@ -28,7 +28,7 @@ public class databaseTest {
 	
 	
 	@Test
-	public void testCreateDatabaseNullLocation() {
+	public void testCreateDatabase_EmptyLocation() {
 		
 		File oldFile = new File(fileLocation);
 		if (oldFile.exists())
@@ -36,8 +36,8 @@ public class databaseTest {
 			oldFile.delete();
 		}
 					
-		database test = new database("Carleton", null);
-		File file = new File(fileLocation);
+		database test = new database("Carleton", "");
+		File file = new File("");
 		assertFalse(file.exists());
 	}
 	
@@ -67,6 +67,20 @@ public class databaseTest {
 						
 			database test = new database("Carleton", fileLocation);			
 			assertFalse(test.addMember(fileLocation,"Vigor", "Haffeez", null));			
+			
+		}
+	
+	@Test
+	public void testAddToDatabase_InvalidParameter() {
+			
+			File oldFile = new File(fileLocation);
+			if (oldFile.exists())
+			{
+				oldFile.delete();
+			}
+						
+			database test = new database("Carleton", fileLocation);			
+			assertFalse(test.addMember(fileLocation,"Vigor", "Haf1223feez", "6135672001"));			
 			
 		}
 	

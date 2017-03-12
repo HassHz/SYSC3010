@@ -2,10 +2,10 @@ package database;
 
 import java.io.File;
 
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -23,7 +23,7 @@ public class database {
 	
 	public database(String monitorLocation, String fileLocation) throws NullPointerException {
 		
-		if(fileLocation == null){
+		if(fileLocation == null || monitorLocation == null || fileLocation == ""){
 			if (debugging){System.out.println("Database creation failed");}
 			return;
 		}
