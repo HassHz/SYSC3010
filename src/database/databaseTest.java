@@ -136,5 +136,19 @@ public class databaseTest {
 			
 		}
 	
+	@Test
+	public void testGetFromDatabase_itemNotInDatabase() {
+			
+			File oldFile = new File(fileLocation);
+			if (oldFile.exists())
+			{
+				oldFile.delete();
+			}
+						
+			database test = new database("Carleton", fileLocation);	
+			test.addMember(fileLocation,"Lemon", "Pies", "6135672001");
+			assertTrue(test.getMemberById(fileLocation,"HassaanPopovic").equals("No member with id: HassaanPopovic found in database"));			
+			
+		}
 
 }
