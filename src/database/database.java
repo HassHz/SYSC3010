@@ -216,4 +216,67 @@ public class database {
 				return false;
 			} 
 	}
+	
+	public String getMemberById(String fileLocation, String id)
+	{
+		if (fileLocation == null || id == null)
+		{
+			if (debugging){System.out.println("Failed to get element");}
+			return "";
+
+		}
+		
+		if (id.matches(".*\\d+.*"))
+			
+		{
+			if (debugging){System.out.println("Failed to get element");}
+			return "";		
+			
+		}
+			
+		File oldFile = new File(fileLocation);
+		
+		if (!oldFile.exists())
+		{
+			if (debugging){System.out.println("Failed to get element");}
+			return "";
+		}	
+		
+		try {
+			File file = new File(fileLocation);
+			
+			
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document document = docBuilder.parse(file);
+	
+			NodeList items = document.getElementsByTagName("contact");
+			
+			if (items== null || items.getLength() < 0)
+			{
+				if (debugging){System.out.println("Failed to get element");}
+				return ""; 
+			}
+			
+			for (int i = 0; i < items.getLength(); i++)
+			{
+				Element node = (Element)items.item(i);
+				if (node.hasAttribute("id") && node.getAttribute("id").equals(id) )
+				{
+					String firstName = node.getElementsByTagName("firstname").item(0).getTextContent();
+					String lastName = node.getElementsByTagName("lastname").item(0).getTextContent();
+					String phoneNumber = node.getElementsByTagName("PhoneNumber").item(0).getTextContent();
+					return "Full Name: " + firstName + " " + lastName + "\nPhone Number: " + phoneNumber;
+				}
+			}
+			
+			return "No member with id: " + id + " found in database";
+		
+		} catch (Exception e) 
+			{
+				if (debugging){System.out.println("Failed to get element");}
+				e.printStackTrace();
+				return "";
+			} 
+	}
 }
