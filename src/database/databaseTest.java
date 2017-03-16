@@ -9,7 +9,7 @@ import org.junit.Test;
 
 public class databaseTest {
 
-	private String fileLocation = "C:\\Users\\Judgment Day\\database.xml"; 
+	private String fileLocation = "database.xml"; 
 	
 	
 	@Test
@@ -120,7 +120,35 @@ public class databaseTest {
 		}
 	
 	
+	@Test
+	public void testGetFromDatabase() {
+			
+			File oldFile = new File(fileLocation);
+			if (oldFile.exists())
+			{
+				oldFile.delete();
+			}
+						
+			database test = new database("Carleton", fileLocation);	
+			test.addMember(fileLocation,"Hassaan", "Popovic", "6135672001");
+			test.addMember(fileLocation,"Lemon", "Pies", "6135672001");
+			assertTrue(test.getMemberById(fileLocation,"HassaanPopovic").equals("Full Name: Hassaan Popovic\nPhone Number: 6135672001"));			
+			
+		}
 	
-	
+	@Test
+	public void testGetFromDatabase_itemNotInDatabase() {
+			
+			File oldFile = new File(fileLocation);
+			if (oldFile.exists())
+			{
+				oldFile.delete();
+			}
+						
+			database test = new database("Carleton", fileLocation);	
+			test.addMember(fileLocation,"Lemon", "Pies", "6135672001");
+			assertTrue(test.getMemberById(fileLocation,"HassaanPopovic").equals("No member with id: HassaanPopovic found in database"));			
+			
+		}
 
 }
