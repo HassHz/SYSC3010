@@ -34,7 +34,7 @@ while(True):
 						break
 						
 					except socket.error:
-						s.sendto(temp.encode('utf-8'), server_address2)			
+						s.sendto(notification.encode('utf-8'), server_address2)			
 
         else:
                 print ("No smoke or flame detected")
