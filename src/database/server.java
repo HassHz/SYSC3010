@@ -12,7 +12,7 @@ import java.net.*;
 public class server {
 
 	private static String fileLocation = "database.xml"; 	
-	static int port = 5000;
+	static int port = 5050;
 	
     public static void main(String[] args) {
     	    	
@@ -83,9 +83,6 @@ public class server {
             	  }
               }
          
-              
-              
-              
             
         }
       } catch (IOException e) {
