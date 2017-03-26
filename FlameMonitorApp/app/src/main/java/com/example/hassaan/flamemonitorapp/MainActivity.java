@@ -1,7 +1,6 @@
 package com.example.hassaan.flamemonitorapp;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -20,9 +19,11 @@ public class MainActivity extends AppCompatActivity {
         if(!userSession.isUserLoggedIn()){
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
+            finish();
         } else {
             Intent intent = new Intent(getApplicationContext(), StatusActivity.class);
             startActivity(intent);
+            finish();
         }
 
     }

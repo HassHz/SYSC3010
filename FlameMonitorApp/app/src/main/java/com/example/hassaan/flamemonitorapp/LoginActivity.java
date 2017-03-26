@@ -1,13 +1,17 @@
 package com.example.hassaan.flamemonitorapp;
 
+import com.michael.easydialog.EasyDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -22,6 +26,7 @@ public class LoginActivity extends AppCompatActivity {
     Button connectButton;
     EditText accountID;
     EditText phoneNumber;
+    ImageButton help;
 
     UserSession userSession;
 
@@ -35,9 +40,10 @@ public class LoginActivity extends AppCompatActivity {
         connectButton = (Button)findViewById(R.id.connect);
         accountID = (EditText)findViewById(R.id.accountID);
         phoneNumber = (EditText)findViewById(R.id.phoneNumber);
+        help = (ImageButton)findViewById(R.id.help);
 
         connectButton.setOnClickListener(onConnectButtonClickListener);
-
+        help.setOnClickListener(onHelpButtonClickListener);
     }
 
     View.OnClickListener onConnectButtonClickListener = new View.OnClickListener() {
@@ -48,6 +54,23 @@ public class LoginActivity extends AppCompatActivity {
             } catch(Exception e) {
                 e.printStackTrace();
             }
+        }
+    };
+
+    View.OnClickListener onHelpButtonClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            new EasyDialog(LoginActivity.this)
+                    .setLayoutResourceId(R.layout.tooltip)
+                    .setBackgroundColor(Color.BLACK)
+                    .setLocationByAttachedView(help)
+                    .setGravity(EasyDialog.GRAVITY_TOP)
+                    .setAnimationTranslationShow(EasyDialog.DIRECTION_X, 300, 400, 0)
+                    .setAnimationTranslationDismiss(EasyDialog.DIRECTION_X, 300, 0, 400)
+                    .setTouchOutsideDismiss(true)
+                    .setMatchParent(false)
+                    .setMarginLeftAndRight(24, 24)
+                    .show();
         }
     };
 
@@ -95,7 +118,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public boolean authenticateLogin(String accountID, String number) {
-        try {
+        return true;
+        /*try {
             InetAddress destination = InetAddress.getByName("192.168.0.22");
             DatagramSocket socket = new DatagramSocket();
             byte[] message = ("login: " + accountID + " " + number).getBytes();
@@ -128,6 +152,6 @@ public class LoginActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return false;
+        return false;*/
     }
 }

@@ -33,6 +33,7 @@ public class StatusActivity extends AppCompatActivity {
         public void onClick(View view) {
             try{
                 userSession.logoutUser();
+                finish();
             } catch(Exception e) {
                 e.printStackTrace();
             }

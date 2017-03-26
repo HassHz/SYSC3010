@@ -19,7 +19,7 @@ public class UserSession {
 
     public static final String PREFER_NAME = "FlameMonitor";
 
-    // All Shared Preferences Keys
+    // Shared Preferences Keys
     public static final String IS_USER_LOGGED_IN = "IsUserLoggedIn";
     public static final String KEY_ACCOUNT_ID = "accountID";
     public static final String KEY_PHONE_NUMBER = "phoneNumber";
@@ -48,21 +48,20 @@ public class UserSession {
         return user;
     }
 
+    //Logout user by clearing data and redirecting to login page
     public void logoutUser(){
-        // Clearing all data from Shared Preferences
+        // Clear all data
         editor.clear();
         editor.commit();
 
-        // After logout redirect user to Loing Activity
-        Intent i = new Intent(context, LoginActivity.class);
-        // Closing all the Activities
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Intent intent = new Intent(context, LoginActivity.class);
 
+        // Closing all the other activities to prevent going back when not logged in
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         // Add new Flag to start new Activity
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        // Staring Login Activity
-        context.startActivity(i);
+        context.startActivity(intent);
     }
 
     //Check login status of application
