@@ -14,6 +14,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 public class LoginActivity extends AppCompatActivity {
@@ -54,7 +55,6 @@ public class LoginActivity extends AppCompatActivity {
 
         String id = accountID.getText().toString();
         String number = phoneNumber.getText().toString();
-        System.out.println(number);
 
         if(id.trim().length() > 0 && number.trim().length() > 0) {
             //TODO: Check if login passes
@@ -98,10 +98,29 @@ public class LoginActivity extends AppCompatActivity {
         try {
             InetAddress destination = InetAddress.getByName("192.168.0.22");
             DatagramSocket socket = new DatagramSocket();
-            byte[] message = (accountID + " " + number).getBytes();
-            System.out.println(message);
+            byte[] message = ("login: " + accountID + " " + number).getBytes();
             DatagramPacket packet = new DatagramPacket(message, message.length, destination, 8080);
             socket.send(packet);
+
+            //Login timeouts in 5 seconds
+            socket.setSoTimeout(5000);
+
+            //Receive confirmation message
+            byte[] receiveData = new byte[1024];
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            while(true) {
+                try {
+                    socket.receive(receivePacket);
+                    String modifiedSentence = new String(receivePacket.getData(), 0, receivePacket.getLength());
+                    System.out.println("FROM SERVER:" + modifiedSentence);
+                    return true;
+                } catch (SocketTimeoutException e) {
+                    // timed out
+                    System.out.println("Login Failed - Server timed out." + e);
+                    socket.close();
+                }
+            }
+
         } catch (UnknownHostException e){
             e.printStackTrace();
         } catch (SocketException e) {
@@ -109,7 +128,6 @@ public class LoginActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //TODO: Confirm login
-        return true;
+        return false;
     }
 }
