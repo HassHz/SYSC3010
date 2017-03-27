@@ -6,14 +6,14 @@ import time
 pfd = pfio.PiFaceDigital()
 pfio.init()
 
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+headlessPiSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 port = 5050
 server_address = ('10.0.0.52', port)
-s.bind(server_address)
-s.setblocking(0)
+headlessPiSocket.bind(server_address)
+headlessPiSocket.setblocking(0)
 
 
-server_address2 = ('10.0.0.51', port)
+serverPi = ('10.0.0.51', port)
 
 
 while(True):
@@ -26,16 +26,16 @@ while(True):
 				
 				notification = "fire notification"
 				
-				s.sendto(notification.encode('utf-8'), server_address2)
+				headlessPiSocket.sendto(notification.encode('utf-8'), serverPi)
 								
 				while (True):
 					try:
-						buf, address = s.recvfrom(port)
+						buf, address = headlessPiSocket.recvfrom(port)
 						sleep(20)
 						break
 						
 					except socket.error:
-						s.sendto(notification.encode('utf-8'), server_address2)			
+						headlessPiSocket.sendto(notification.encode('utf-8'), serverPi)			
 
         else:
                 print ("No smoke or flame detected")
