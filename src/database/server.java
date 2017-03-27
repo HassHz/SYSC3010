@@ -62,7 +62,7 @@ public class server {
 	            	  else if (dataReceived.contains("add:")){
 	            		  
 	            		  String[] entryData = dataReceived.split(":");
-	            		  if (entryData.length > 4){
+	            		  if (entryData.length > 3){
 	            			  
 	            			  database.addMember(fileLocation, entryData[1], entryData[2], entryData[3]);}
 	            		  
