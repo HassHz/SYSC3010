@@ -7,12 +7,13 @@ pfd = pfio.PiFaceDigital()
 pfio.init()
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-server_address = ('10.0.0.52', 5050)
+port = 5050
+server_address = ('10.0.0.52', port)
 s.bind(server_address)
 s.setblocking(0)
 
 
-server_address2 = ('10.0.0.51', 5050)
+server_address2 = ('10.0.0.51', port)
 
 
 while(True):
