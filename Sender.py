@@ -24,7 +24,7 @@ while(True):
 				
 				pfio.digital_write(0,1)
 				
-				notification = "fireFound"
+				notification = "fire notification"
 				
 				s.sendto(notification.encode('utf-8'), server_address2)
 								

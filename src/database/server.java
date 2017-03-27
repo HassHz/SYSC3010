@@ -1,12 +1,7 @@
 package database;
 
-
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
 import java.io.IOException;
 import java.net.*;
-//import java.util.*;
 
 
 public class server {
@@ -40,7 +35,7 @@ public class server {
               InetAddress IPAddress = receivePacket.getAddress();
               
               
-              if (dataReceived.contains("notification")){
+              if (dataReceived.contains("notification") && dataReceived.contains("fire") ){
             	  
                   String sendString = "received";
                   byte[] sendData = sendString.getBytes("UTF-8");
