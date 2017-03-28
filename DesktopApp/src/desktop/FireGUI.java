@@ -1,15 +1,11 @@
-
+package desktop;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.FlowLayout;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.event.*;
-import java.lang.Integer;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import java.io.File;
-import java.io.IOException;
 import java.net.*;
 
 
@@ -26,8 +22,7 @@ public class FireGUI implements ActionListener {
 	
 	
 	public static void main(String[] args) {
-		FireGUI program = new FireGUI();
-
+		new FireGUI();
 	}
 
 	public FireGUI(){
@@ -48,8 +43,8 @@ public class FireGUI implements ActionListener {
 		addBox.setSelected(false);
 		
 // 		getBox.addItemListener(this);
-//        removeBox.addItemListener(this);
-//        addBox.addItemListener(this);
+//      removeBox.addItemListener(this);
+//      addBox.addItemListener(this);
 
 		
 		JPanel checkPanel = new JPanel(new GridLayout(0, 1));

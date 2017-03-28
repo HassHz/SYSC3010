@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Flame Monitor App</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_status">StatusActivity</string>
+</resources>
