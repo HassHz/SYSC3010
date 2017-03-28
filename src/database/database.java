@@ -71,6 +71,7 @@ public class database {
 
 		}
 		
+		//regex expression checks to make sure names are strings
 		if (firstName.matches(".*\\d+.*") || lastName.matches(".*\\d+.*"))
 			
 		{
@@ -79,6 +80,7 @@ public class database {
 			
 		}
 		
+		//regex expression checks to make sure numbers are int's
 		if (phoneNumber.length() > 10 || !phoneNumber.matches("[0-9]+"))
 		{
 			if (debugging){System.out.println("Failed to add element");}
@@ -150,6 +152,7 @@ public class database {
 
 		}
 		
+		//regex expression checks to make sure names are strings
 		if (firstName.matches(".*\\d+.*") || lastName.matches(".*\\d+.*"))
 			
 		{
@@ -226,6 +229,7 @@ public class database {
 
 		}
 		
+		//regex expression checks to make sure id's are strings
 		if (id.matches(".*\\d+.*"))
 			
 		{
