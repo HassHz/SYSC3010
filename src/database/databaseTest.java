@@ -21,7 +21,7 @@ public class databaseTest {
 			oldFile.delete();
 		}
 					
-		database test = new database("Carleton", fileLocation);
+		new database("Carleton", fileLocation);
 		File file = new File(fileLocation);
 		assertTrue(file.exists());
 	}
@@ -36,7 +36,7 @@ public class databaseTest {
 			oldFile.delete();
 		}
 					
-		database test = new database("Carleton", "");
+		new database("Carleton", "");
 		File file = new File("");
 		assertFalse(file.exists());
 	}

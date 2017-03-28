@@ -1,11 +1,11 @@
 package com.example.hassaan.flamemonitorapp;
 
 import com.michael.easydialog.EasyDialog;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -80,7 +80,6 @@ public class LoginActivity extends AppCompatActivity {
         String number = phoneNumber.getText().toString();
 
         if(id.trim().length() > 0 && number.trim().length() > 0) {
-            //TODO: Check if login passes
             if(authenticateLogin(id, number)) {
                 userSession.createUserLoginSession(id, number);
 
@@ -118,12 +117,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public boolean authenticateLogin(String accountID, String number) {
-        return true;
-        /*try {
+        try {
             InetAddress destination = InetAddress.getByName("192.168.0.22");
             DatagramSocket socket = new DatagramSocket();
-            byte[] message = ("login: " + accountID + " " + number).getBytes();
-            DatagramPacket packet = new DatagramPacket(message, message.length, destination, 8080);
+            byte[] message = ("get:" + accountID).getBytes();
+            DatagramPacket packet = new DatagramPacket(message, message.length, destination, 5050);
             socket.send(packet);
 
             //Login timeouts in 5 seconds
@@ -135,9 +133,11 @@ public class LoginActivity extends AppCompatActivity {
             while(true) {
                 try {
                     socket.receive(receivePacket);
-                    String modifiedSentence = new String(receivePacket.getData(), 0, receivePacket.getLength());
-                    System.out.println("FROM SERVER:" + modifiedSentence);
-                    return true;
+                    String userInfo = new String(receivePacket.getData(), 0, receivePacket.getLength());
+                    System.out.println("FROM SERVER:" + userInfo);
+                    if(userInfo.substring(userInfo.lastIndexOf(" ")+1).equals(number)) {
+                        return true;
+                    }
                 } catch (SocketTimeoutException e) {
                     // timed out
                     System.out.println("Login Failed - Server timed out." + e);
@@ -152,6 +152,6 @@ public class LoginActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return false;*/
+        return false;
     }
 }
