@@ -49,7 +49,7 @@ public class server {
 	            	  if (dataReceived.contains("get:")){
 	            		    
 	            		  String[] entryData = dataReceived.split(":");
-	            		  if (entryData.length > 2){
+	            		  if (entryData.length > 1){
 	            			
 	                      String sendString = database.getMemberById(fileLocation, entryData[1]);
 	                      
@@ -71,8 +71,8 @@ public class server {
 	            	  else if (dataReceived.contains("remove:")){
             		  
 	            		  String[] entryData = dataReceived.split(":");
-	            		  if (entryData.length > 3){
-	            			  database.removeMember(fileLocation, entryData[1], entryData[2]);}	            		              		  
+	            		  if (entryData.length > 1){
+	            			  database.removeMember(fileLocation, entryData[1]);}	            		              		  
             	  }
               }  
         }

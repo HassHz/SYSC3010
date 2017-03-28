@@ -143,9 +143,9 @@ public class database {
 			} 
 	}
 	
-	public boolean removeMember(String fileLocation, String firstName, String lastName)
+	public boolean removeMember(String fileLocation, String id)
 	{
-		if (fileLocation == null || firstName == null || lastName == null)
+		if (fileLocation == null || id == null)
 		{
 			if (debugging){System.out.println("Failed to remove element");}
 			return false;
@@ -153,7 +153,7 @@ public class database {
 		}
 		
 		//regex expression checks to make sure names are strings
-		if (firstName.matches(".*\\d+.*") || lastName.matches(".*\\d+.*"))
+		if (id.matches(".*\\d+.*"))
 			
 		{
 			if (debugging){System.out.println("Failed to remove element");}
@@ -189,7 +189,7 @@ public class database {
 		for (int i = 0; i < items.getLength(); i++)
 		{
 			Element node = (Element)items.item(i);
-			if (node.hasAttribute("id")&& node.getAttribute("id").equals(firstName+lastName) )
+			if (node.hasAttribute("id")&& node.getAttribute("id").equals(id) )
 			{
 				foundItem = true;
 				items.item(i).getParentNode().removeChild(items.item(i));
