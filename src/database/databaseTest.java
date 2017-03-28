@@ -97,7 +97,7 @@ public class databaseTest {
 			test.addMember(fileLocation,"Vigor", "Haffeez", "6135672001");
 			test.addMember(fileLocation,"Bill", "Peters", "6135672001");
 			test.addMember(fileLocation,"Phil", "Billy", "6135672001");
-			assertTrue(test.removeMember(fileLocation,"Bill", "Peters"));			
+			assertTrue(test.removeMember(fileLocation,"BillPeters"));			
 			
 		}
 	
@@ -115,7 +115,7 @@ public class databaseTest {
 			test.addMember(fileLocation,"Vigor", "Haffeez", "6135672001");
 			test.addMember(fileLocation,"Bill", "Peters", "6135672001");
 			test.addMember(fileLocation,"Phil", "Billy", "6135672001");
-			assertFalse(test.removeMember(fileLocation,"NotThere", "NotThere"));			
+			assertFalse(test.removeMember(fileLocation,"NotThereNotThere"));			
 			
 		}
 	
