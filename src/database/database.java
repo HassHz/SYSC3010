@@ -1,7 +1,6 @@
 package database;
 
 import java.io.File;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -266,11 +265,24 @@ public class database {
 				Element node = (Element)items.item(i);
 				if (node.hasAttribute("id") && node.getAttribute("id").equals(id) )
 				{
-					String firstName = node.getElementsByTagName("firstname").item(0).getTextContent();
-					String lastName = node.getElementsByTagName("lastname").item(0).getTextContent();
-					String phoneNumber = node.getElementsByTagName("PhoneNumber").item(0).getTextContent();
-					return "Full Name: " + firstName + " " + lastName + "\nPhone Number: " + phoneNumber;
-				}
+					if (node.getElementsByTagName("ip").getLength() == 0)
+					{  
+						String firstName = node.getElementsByTagName("firstname").item(0).getTextContent();
+						String lastName = node.getElementsByTagName("lastname").item(0).getTextContent();
+						String phoneNumber = node.getElementsByTagName("PhoneNumber").item(0).getTextContent();
+						return "Full Name: " + firstName + " " + lastName + "\nPhone Number: " + phoneNumber;
+					}
+					
+					else
+					{
+						String ip = node.getElementsByTagName("ip").item(0).getTextContent();		
+						String firstName = node.getElementsByTagName("firstname").item(0).getTextContent();
+						String lastName = node.getElementsByTagName("lastname").item(0).getTextContent();
+						String phoneNumber = node.getElementsByTagName("PhoneNumber").item(0).getTextContent();
+						return "Full Name: " + firstName + " " + lastName + "\nPhone Number: " + phoneNumber
+						+ "\nIP: " + ip;
+					}
+					}
 			}
 			
 			return "No member with id: " + id + " found in database";
@@ -282,4 +294,70 @@ public class database {
 				return "";
 			} 
 	}
+	
+	public String addIP(String fileLocation, String id, String ip)
+	{
+		if (fileLocation == null || id == null || ip == null)
+		{
+			if (debugging){System.out.println("Failed to get element");}
+			return "";
+
+		}
+		
+		//regex expression checks to make sure id and ip are strings
+		if (id.matches(".*\\d+.*") && ip.matches(".*\\d+.*"))
+			
+		{
+			if (debugging){System.out.println("Failed to get element");}
+			return "";		
+			
+		}
+			
+		File oldFile = new File(fileLocation);
+		
+		if (!oldFile.exists())
+		{
+			if (debugging){System.out.println("Failed to get element");}
+			return "";
+		}	
+		
+		try {
+			File file = new File(fileLocation);
+			
+			
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document document = docBuilder.parse(file);
+	
+			NodeList items = document.getElementsByTagName("contact");
+			
+			if (items== null || items.getLength() < 0)
+			{
+				if (debugging){System.out.println("Failed to get element");}
+				return ""; 
+			}
+			
+			for (int i = 0; i < items.getLength(); i++)
+			{
+				Element node = (Element)items.item(i);
+				if (node.hasAttribute("id") && node.getAttribute("id").equals(id) )
+				{
+					Element  IP = document.createElement("ip");
+					IP.appendChild(document.createTextNode(ip));
+					node.appendChild(IP);
+					return ""; 
+						
+					}
+			}
+			
+			return "No member with id: " + id + " found in database";
+
+		} catch (Exception e) 
+			{
+				if (debugging){System.out.println("Failed to get element");}
+				e.printStackTrace();
+				return "";
+			} 
+	}
+
 }

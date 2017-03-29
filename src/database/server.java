@@ -49,6 +49,11 @@ public class server {
                                 byte[] sendData = member.getBytes("UTF-8");
                                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, receivePacket.getPort());
                                 serverSocket.send(sendPacket);
+				
+				if (dataReceived.contains("phone"))
+				{
+					database.addIP(fileLocation, entryData[1], IPAddress);
+				}					
                             }
                         }
 
