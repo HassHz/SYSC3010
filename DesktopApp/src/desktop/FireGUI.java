@@ -9,16 +9,16 @@ import javax.swing.JPanel;
 import java.net.*;
 
 
-
+  
 
 public class FireGUI implements ActionListener {
 
 	private JButton enterButton;
-	private JTextField nameField, numberField, lastName;
+	private JTextField nameField, numberField, lastName, displayBox;
 	private JCheckBox getBox, removeBox, addBox;
 	private JPanel newPanel = new JPanel(new GridBagLayout());
 	static int port = 5050;
-
+	static boolean debugging = true;
 	
 	
 	public static void main(String[] args) {
@@ -51,8 +51,6 @@ public class FireGUI implements ActionListener {
         	checkPanel.add(getBox);
         	checkPanel.add(removeBox);
         	checkPanel.add(addBox);
-
- 
 		
 		JPanel buttonPanel = new JPanel();
 		enterButton = new JButton ("ENTER");
@@ -60,19 +58,14 @@ public class FireGUI implements ActionListener {
 		enterButton.addActionListener(this);
 		buttonPanel.add(enterButton);
 
-
-
-
-
 		nameField = new JTextField( 10);
 		numberField = new JTextField(10);
 		lastName = new JTextField(10);
+		displayBox = new JTextField("DEFAULT TEXT", 20);
 		nameField.setEditable(true);
 		numberField.setEditable(true);
 		lastName.setEditable(true);
-
-
-
+		displayBox.setEditable(false);
          
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.anchor = GridBagConstraints.WEST;
@@ -98,18 +91,20 @@ public class FireGUI implements ActionListener {
 		newPanel.add(new JLabel("LAST NAME"), constraints);
 		constraints.gridx = 2;
 		constraints.gridy = 2;
-		newPanel.add(lastName, constraints);                           
+		newPanel.add(lastName, constraints);    
+		constraints.gridx = 3;
+		constraints.gridy = 3;
+		newPanel.add(displayBox, constraints); 
 		constraints.gridy = 4;
 		newPanel.add(buttonPanel, constraints);
 		constraints.anchor = GridBagConstraints.CENTER;
 		contentPane.add( newPanel );
 
-		frame.setSize(350,300);
+		frame.setSize(1000,1000);
 		frame.setLocation(100,100);
 		frame.setVisible(true);
 
 }
-
 
 	public void actionPerformed(ActionEvent e) { 
 		if (e.getSource().equals (enterButton))
@@ -126,21 +121,32 @@ public class FireGUI implements ActionListener {
 				JOptionPane.showMessageDialog( newPanel, "please enter the number of the client");
 				
 			if(lastName.getText().equals(""))
-				JOptionPane.showMessageDialog( newPanel, "please enter the last name of the client");
-				
+				JOptionPane.showMessageDialog( newPanel, "please enter the last name of the client");				
 			
 		}
+		
 		try{
 		DatagramSocket serverSocket = new DatagramSocket(port);
-		InetAddress host=InetAddress.getByName("server");
+		InetAddress host=InetAddress.getByName("10.0.0.51");
 		
 		if(getBox.isSelected() && !removeBox.isSelected() && !addBox.isSelected()){
 
 			String sendString = "get:"+ nameField.getText() + lastName.getText();
 
-                  	byte[] sendData = sendString.getBytes();
-                  	DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, host, port);
-			serverSocket.send(sendPacket); 
+          	byte[] sendData = sendString.getBytes();
+          	DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, host, port);
+          	serverSocket.send(sendPacket); 
+                  	
+          	byte[] receiveData = new byte[256];       	
+            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+            if (debugging) {System.out.printf("Listening on udp:%s:%d%n",InetAddress.getLocalHost().getHostAddress(), port);}
+            serverSocket.receive(receivePacket);
+            
+            String dataReceived = new String(receivePacket.getData(), 0, receivePacket.getLength());
+            if (debugging) {System.out.println("RECEIVED: " + dataReceived);}                  	
+            
+            displayBox.setText(dataReceived);                  	
+                  	
 		}
 		else if(!getBox.isSelected() && removeBox.isSelected() && !addBox.isSelected()){
 		      	String sendString = "remove:"+ nameField.getText() + lastName.getText();
