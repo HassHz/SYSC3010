@@ -33,12 +33,25 @@ public class server {
 
                 if (dataReceived.contains("notification") && dataReceived.contains("fire")) {
 
-                    String sendString = "received";
-                    byte[] sendData = sendString.getBytes("UTF-8");
-                    DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, receivePacket.getPort());
-                    serverSocket.send(sendPacket);
+			String sendString = "received";
+			byte[] sendData = sendString.getBytes("UTF-8");
+			DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, receivePacket.getPort());
+			serverSocket.send(sendPacket);
+				
+			//InetAddress Ips[] = database.getAllIps(fileLocation);
+			String Ips[] = database.getAllIps(fileLocation);
 
-                } else if (dataReceived.contains("add") || dataReceived.contains("remove") || dataReceived.contains("get")) {
+			sendString = "notification";
+			sendData = sendString.getBytes("UTF-8");		
+
+			for (int i = 0; i < Ips.length; i++)
+			{
+				sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(Ips[i]), 5050);
+				serverSocket.send(sendPacket);
+			}
+			
+		} 
+		else if (dataReceived.contains("add") || dataReceived.contains("remove") || dataReceived.contains("get")) {
 
                     if (dataReceived.contains("get:")){
 
@@ -52,7 +65,7 @@ public class server {
 				
 				if (dataReceived.contains("phone"))
 				{
-					database.addIP(fileLocation, entryData[1], IPAddress);
+					database.addIP(fileLocation, entryData[1], IPAddress.toString());
 				}					
                             }
                         }

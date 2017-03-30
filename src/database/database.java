@@ -359,5 +359,38 @@ public class database {
 				return "";
 			} 
 	}
+	public String[] getAllIps(String fileLocation)
+	{
+		File oldFile = new File(fileLocation);
+		
+		if (!oldFile.exists())
+		{
+			if (debugging){System.out.println("Failed to get element");}
+			return null;
+		}	
+		
+		try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document document = docBuilder.parse(oldFile);
 
+			NodeList items = document.getElementsByTagName("ip");
+			String[] IpList = new String[items.getLength()] ;
+
+			for (int i = 0; i < items.getLength(); i++)
+			{
+				Element node = (Element)items.item(i);
+				IpList[i] = node.getTextContent();
+				
+			}
+			return IpList;
+		}
+		catch (Exception e)
+		{	
+			if (debugging){System.out.println("Failed to get element");}
+			e.printStackTrace();
+			return null;
+		}
+
+	}
 }
