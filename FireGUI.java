@@ -19,7 +19,7 @@ public class FireGUI implements ActionListener {
 	static int port = 5050;
 	static String hostIP = "10.0.0.52";
 	static boolean debugging = true;
-	
+
 	
 	public static void main(String[] args) {
 		new FireGUI();
@@ -41,10 +41,10 @@ public class FireGUI implements ActionListener {
 		addBox.setSelected(false);
 		
 		JPanel checkPanel = new JPanel(new GridLayout(0, 1));
-    	checkPanel.add(getBox);
-    	checkPanel.add(removeBox);
-    	checkPanel.add(addBox);
-        	
+	    	checkPanel.add(getBox);
+	    	checkPanel.add(removeBox);
+	    	checkPanel.add(addBox);
+			
 		
 		JPanel buttonPanel = new JPanel();
 		enterButton = new JButton ("ENTER");
@@ -98,6 +98,10 @@ public class FireGUI implements ActionListener {
 		frame.setLocation(100,100);
 		frame.setVisible(true);
 
+
+
+
+
 }
 
 	public void actionPerformed(ActionEvent e) { 
@@ -113,35 +117,46 @@ public class FireGUI implements ActionListener {
 		
 		if(getBox.isSelected() && !removeBox.isSelected() && !addBox.isSelected()){
 
-			if(nameField.getText().equals(""))
+			System.out.println("get button pressed");
+			if(nameField.getText().equals("")){
 				JOptionPane.showMessageDialog( newPanel, "please enter the first name of the client");
+				serverSocket.close();				
+				return;}
+
 			
-			if(lastName.getText().equals(""))
+			if(lastName.getText().equals("")){
 				JOptionPane.showMessageDialog( newPanel, "please enter the last name of the client");
+				serverSocket.close();				
+				return;}
 			
 			String sendString = "get:"+ nameField.getText() + lastName.getText();
 
-          	byte[] sendData = sendString.getBytes();
-          	DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, host, port);
-          	serverSocket.send(sendPacket); 
-                  	
-          	byte[] receiveData = new byte[256];       	
-            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-            if (debugging) {System.out.printf("Listening on udp:%s:%d%n",InetAddress.getLocalHost().getHostAddress(), port);}
-            serverSocket.receive(receivePacket);
-            
-            String dataReceived = new String(receivePacket.getData(), 0, receivePacket.getLength());
-            if (debugging) {System.out.println("RECEIVED: " + dataReceived);}                  	
-            displayBox.setText(dataReceived);                  	
+		  	byte[] sendData = sendString.getBytes();
+		  	DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, host, port);
+		  	serverSocket.send(sendPacket); 
+		          	
+		  	byte[] receiveData = new byte[256];       	
+		    	DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+		    	if (debugging) {System.out.printf("Listening on udp:%s:%d%n",InetAddress.getLocalHost().getHostAddress(), port);}
+		    	serverSocket.receive(receivePacket);
+		    
+		    	String dataReceived = new String(receivePacket.getData(), 0, receivePacket.getLength());
+		    	if (debugging) {System.out.println("RECEIVED: " + dataReceived);}                  	
+		    	displayBox.setText(dataReceived);                  	
                   	
 		}
 		else if(!getBox.isSelected() && removeBox.isSelected() && !addBox.isSelected()){
 			
-			if(nameField.getText().equals(""))
+			System.out.println("remove button pressed");
+			if(nameField.getText().equals("")){
 				JOptionPane.showMessageDialog( newPanel, "please enter the first name of the client");
+				serverSocket.close();				
+				return;}
 			
-			if(lastName.getText().equals(""))
+			if(lastName.getText().equals("")){
 				JOptionPane.showMessageDialog( newPanel, "please enter the last name of the client");
+				serverSocket.close();				
+				return;}
 			
 	      	String sendString = "remove:"+ nameField.getText() + lastName.getText();
 	      	byte[] sendData = sendString.getBytes();
@@ -152,25 +167,34 @@ public class FireGUI implements ActionListener {
 		else if(!getBox.isSelected() && !removeBox.isSelected() && addBox.isSelected()){
 			
 			System.out.println("Add button pressed");
-			if(nameField.getText().equals(""))
+			if(nameField.getText().equals("")){
 				JOptionPane.showMessageDialog( newPanel, "please enter the first name of the client");
+				serverSocket.close();				
+				return;}
 				
-			if(numberField.getText().equals(""))
+			if(numberField.getText().equals("")){
 				JOptionPane.showMessageDialog( newPanel, "please enter the number of the client");
+				serverSocket.close();				
+				return;}
 				
-			if(lastName.getText().equals(""))
-				JOptionPane.showMessageDialog( newPanel, "please enter the last name of the client");	
+			if(lastName.getText().equals("")){
+				JOptionPane.showMessageDialog( newPanel, "please enter the last name of the client");
+				serverSocket.close();				
+				return;}
 					
-	      	String sendString = "add:"+ nameField.getText()+ ":" +lastName.getText() + ":" + numberField.getText();
-          	byte[] sendData = sendString.getBytes();
-          	DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, host, port);
-          	serverSocket.send(sendPacket); 
+		      	String sendString = "add:"+ nameField.getText()+ ":" +lastName.getText() + ":" + numberField.getText();
+		  	byte[] sendData = sendString.getBytes();
+		  	DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, host, port);
+		  	serverSocket.send(sendPacket); 
 		}
 		else
-			JOptionPane.showMessageDialog( newPanel, "please only select 1 box");			
+		{	JOptionPane.showMessageDialog( newPanel, "please only select 1 box");	}		
 		
+		serverSocket.close();
+
 	}
-		 catch(Exception ex){
+		 catch(Exception ex){ ex.printStackTrace();
+
 
         }
 	     
