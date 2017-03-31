@@ -1,4 +1,5 @@
-package desktop;
+
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.BorderLayout;
@@ -8,16 +9,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.net.*;
 
-
-  
-
 public class FireGUI implements ActionListener {
 
 	private JButton enterButton;
-	private JTextField nameField, numberField, lastName, displayBox;
+	private JTextField nameField, numberField, lastName;
+	private JTextArea displayBox;
 	private JCheckBox getBox, removeBox, addBox;
 	private JPanel newPanel = new JPanel(new GridBagLayout());
 	static int port = 5050;
+	static String hostIP = "10.0.0.52";
 	static boolean debugging = true;
 	
 	
@@ -30,9 +30,7 @@ public class FireGUI implements ActionListener {
 		JFrame frame = new JFrame("Fire Alarm GUI");
 		Container contentPane = frame.getContentPane();
 		contentPane.setLayout( new BorderLayout());
-	
-	
-	
+
 		getBox = new JCheckBox("Get");
 		getBox.setSelected(false);
 		
@@ -42,15 +40,11 @@ public class FireGUI implements ActionListener {
 		addBox = new JCheckBox("Add");
 		addBox.setSelected(false);
 		
-// 		getBox.addItemListener(this);
-//      removeBox.addItemListener(this);
-//      addBox.addItemListener(this);
-
-		
 		JPanel checkPanel = new JPanel(new GridLayout(0, 1));
-        	checkPanel.add(getBox);
-        	checkPanel.add(removeBox);
-        	checkPanel.add(addBox);
+    	checkPanel.add(getBox);
+    	checkPanel.add(removeBox);
+    	checkPanel.add(addBox);
+        	
 		
 		JPanel buttonPanel = new JPanel();
 		enterButton = new JButton ("ENTER");
@@ -61,7 +55,7 @@ public class FireGUI implements ActionListener {
 		nameField = new JTextField( 10);
 		numberField = new JTextField(10);
 		lastName = new JTextField(10);
-		displayBox = new JTextField("DEFAULT TEXT", 20);
+		displayBox = new JTextArea("", 3,20);
 		nameField.setEditable(true);
 		numberField.setEditable(true);
 		lastName.setEditable(true);
@@ -69,7 +63,7 @@ public class FireGUI implements ActionListener {
          
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.anchor = GridBagConstraints.WEST;
-		constraints.insets = new Insets(10, 10, 10, 10);
+		constraints.insets = new Insets(5, 5, 5, 5);
 		
 		constraints.gridy = 0;
 		constraints.gridx = 1;        
@@ -93,7 +87,7 @@ public class FireGUI implements ActionListener {
 		constraints.gridy = 2;
 		newPanel.add(lastName, constraints);    
 		constraints.gridx = 3;
-		constraints.gridy = 3;
+		constraints.gridy = 0;
 		newPanel.add(displayBox, constraints); 
 		constraints.gridy = 4;
 		newPanel.add(buttonPanel, constraints);
@@ -107,30 +101,24 @@ public class FireGUI implements ActionListener {
 }
 
 	public void actionPerformed(ActionEvent e) { 
-		if (e.getSource().equals (enterButton))
-		{
-			if(!getBox.isSelected() && !removeBox.isSelected() && !addBox.isSelected()){
-				JOptionPane.showMessageDialog( newPanel, "No box selected. Please select a box.");
-				
-			}
-			
-			if(nameField.getText().equals(""))
-				JOptionPane.showMessageDialog( newPanel, "please enter the first name of the client");
-				
-			if(numberField.getText().equals(""))
-				JOptionPane.showMessageDialog( newPanel, "please enter the number of the client");
-				
-			if(lastName.getText().equals(""))
-				JOptionPane.showMessageDialog( newPanel, "please enter the last name of the client");				
-			
-		}
+	
+		if(!getBox.isSelected() && !removeBox.isSelected() && !addBox.isSelected()){
+			JOptionPane.showMessageDialog( newPanel, "No box selected. Please select a box.");			
+		}			
 		
 		try{
+			
 		DatagramSocket serverSocket = new DatagramSocket(port);
-		InetAddress host=InetAddress.getByName("10.0.0.51");
+		InetAddress host=InetAddress.getByName(hostIP);
 		
 		if(getBox.isSelected() && !removeBox.isSelected() && !addBox.isSelected()){
 
+			if(nameField.getText().equals(""))
+				JOptionPane.showMessageDialog( newPanel, "please enter the first name of the client");
+			
+			if(lastName.getText().equals(""))
+				JOptionPane.showMessageDialog( newPanel, "please enter the last name of the client");
+			
 			String sendString = "get:"+ nameField.getText() + lastName.getText();
 
           	byte[] sendData = sendString.getBytes();
@@ -144,27 +132,42 @@ public class FireGUI implements ActionListener {
             
             String dataReceived = new String(receivePacket.getData(), 0, receivePacket.getLength());
             if (debugging) {System.out.println("RECEIVED: " + dataReceived);}                  	
-            
             displayBox.setText(dataReceived);                  	
                   	
 		}
 		else if(!getBox.isSelected() && removeBox.isSelected() && !addBox.isSelected()){
-		      	String sendString = "remove:"+ nameField.getText() + lastName.getText();
-                  	byte[] sendData = sendString.getBytes();
-                  	DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, host, port);
-			serverSocket.send(sendPacket); 
+			
+			if(nameField.getText().equals(""))
+				JOptionPane.showMessageDialog( newPanel, "please enter the first name of the client");
+			
+			if(lastName.getText().equals(""))
+				JOptionPane.showMessageDialog( newPanel, "please enter the last name of the client");
+			
+	      	String sendString = "remove:"+ nameField.getText() + lastName.getText();
+	      	byte[] sendData = sendString.getBytes();
+          	DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, host, port);
+          	serverSocket.send(sendPacket); 
 		}
 		
 		else if(!getBox.isSelected() && !removeBox.isSelected() && addBox.isSelected()){
-		      	String sendString = "add:"+ nameField.getText()+ ":" +lastName.getText() + ":" + numberField.getText();
-                  	byte[] sendData = sendString.getBytes();
-                  	DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, host, port);
-			serverSocket.send(sendPacket); 
+			
+			System.out.println("Add button pressed");
+			if(nameField.getText().equals(""))
+				JOptionPane.showMessageDialog( newPanel, "please enter the first name of the client");
+				
+			if(numberField.getText().equals(""))
+				JOptionPane.showMessageDialog( newPanel, "please enter the number of the client");
+				
+			if(lastName.getText().equals(""))
+				JOptionPane.showMessageDialog( newPanel, "please enter the last name of the client");	
+					
+	      	String sendString = "add:"+ nameField.getText()+ ":" +lastName.getText() + ":" + numberField.getText();
+          	byte[] sendData = sendString.getBytes();
+          	DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, host, port);
+          	serverSocket.send(sendPacket); 
 		}
 		else
 			JOptionPane.showMessageDialog( newPanel, "please only select 1 box");			
-		
-		
 		
 	}
 		 catch(Exception ex){
