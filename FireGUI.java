@@ -17,7 +17,7 @@ public class FireGUI implements ActionListener {
 	private JCheckBox getBox, removeBox, addBox;
 	private JPanel newPanel = new JPanel(new GridBagLayout());
 	static int port = 5050;
-	static String hostIP = "10.0.0.52";
+	static String hostIP = "10.0.0.51";
 	static boolean debugging = true;
 
 	
