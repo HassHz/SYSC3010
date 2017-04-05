@@ -26,10 +26,6 @@
             android:name=".StatusActivity"
             android:label="@string/title_activity_status"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".VideoActivity"
-            android:label="@string/title_activity_video"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
         <service android:name=".NotificationReceiver">
 
         </service>
