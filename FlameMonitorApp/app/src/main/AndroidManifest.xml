@@ -3,6 +3,7 @@
     package="com.example.hassaan.flamemonitorapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -24,7 +25,10 @@
         <activity
             android:name=".StatusActivity"
             android:label="@string/title_activity_status"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-    </application>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <service android:name=".NotificationReceiver">
 
+        </service>
+
+    </application>
 </manifest>
