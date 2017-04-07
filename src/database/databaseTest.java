@@ -150,5 +150,62 @@ public class databaseTest {
 			assertTrue(test.getMemberById(fileLocation,"HassaanPopovic").equals("No member with id: HassaanPopovic found in database"));			
 			
 		}
+	
+	@Test
+	public void testAddIp() {
+			
+		File oldFile = new File(fileLocation);
+		if (oldFile.exists())
+		{
+			oldFile.delete();
+		}
+					
+		database test = new database("Carleton", fileLocation);	
+		test.addMember(fileLocation,"Hassaan", "Popovic", "6135672001");
+		test.addMember(fileLocation,"Lemon", "Pies", "6135672001");
+		assertTrue(test.addIP(fileLocation, "HassaanPopovic", "10.0.0.52").equals("Element added"));	
+			
+		}
+	
+	
+	@Test
+	public void testAddIp_invalidIp() {
+			
+		File oldFile = new File(fileLocation);
+		if (oldFile.exists())
+		{
+			oldFile.delete();
+		}
+					
+		database test = new database("Carleton", fileLocation);	
+		test.addMember(fileLocation,"Hassaan", "Popovic", "6135672001");
+		test.addMember(fileLocation,"Lemon", "Pies", "6135672001");
+		assertFalse(test.addIP(fileLocation, "THIS ID DOES NOT EXIST", "10.0.0.52").equals("Element added"));	
+			
+		}
+	
+	@Test
+	public void testGetAllIps() {
+			
+		File oldFile = new File(fileLocation);
+		if (oldFile.exists())
+		{
+			oldFile.delete();
+		}
+					
+		database test = new database("Carleton", fileLocation);	
+		test.addMember(fileLocation,"Hassaan", "Popovic", "6135672001");
+		test.addMember(fileLocation,"Lemon", "Pies", "6135672001");
+		test.addIP(fileLocation, "HassaanPopovic", "10.0.0.52");
+		test.addIP(fileLocation, "LemonPies", "10.0.0.51");
+		
+		String [] ipTestArray = {"10.0.0.52","10.0.0.51"};
+		
+		assertFalse(test.getAllIps(fileLocation).equals(ipTestArray));	
+			
+		}
+	
+	
+	
 
 }
