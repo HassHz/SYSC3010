@@ -7,15 +7,19 @@ import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity {
 
-    UserSession userSession;
+    private UserSession userSession;
+    private boolean debugging = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Create a new instance of sharedPreferences usersession to see if a user is logged in
         userSession = new UserSession(getApplicationContext());
-        System.out.println(userSession.isUserLoggedIn());
+        if (debugging) System.out.println(userSession.isUserLoggedIn());
+
+        //Launch appropriate activity whether user is logged in or not
         if(!userSession.isUserLoggedIn()){
             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);

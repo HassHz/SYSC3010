@@ -13,26 +13,31 @@ import javax.imageio.ImageIO;
 
 public class FireGUI implements ActionListener {
 
+	//GUI Components
 	private JButton enterButton;
 	private JTextField nameField, numberField, lastName;
 	private JTextArea displayBox;
 	private JCheckBox getBox, removeBox, addBox;
 	private JPanel newPanel = new JPanel(new GridBagLayout());
+
+	//Server information
 	static int port = 5050;
 	static String hostIP = "10.0.0.51";
 	static boolean debugging = true;
 
 	
 	public static void main(String[] args) {
+		//Launch the GUI		
 		new FireGUI();
 	}
 
 	public FireGUI() {
 	
 		JFrame frame = new JFrame("Flame Monitor GUI");
+		//Terminate the program when the GUI is closed with the X button
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		//background image		
+		//Create a new JPanel with the background image
 		JPanel background= new JPanel() {
 	        	@Override
 			public void paintComponent(Graphics g) {
@@ -44,14 +49,16 @@ public class FireGUI implements ActionListener {
 			        }
 	          	}
 	        };
+
+		//Set the JFrame's content pane as the background image panel
 		background.setLayout(new BorderLayout());
 		frame.setContentPane(background);
 
-		//FlameMonitor logo
+		//Create a JLabel with the FlameMonitor logo image
 		ImageIcon fmlogo = new ImageIcon("Images/flamemonitorlogo.png");
 		JLabel logoLabel = new JLabel(fmlogo, JLabel.CENTER);
 
-		//Action checkboxes
+		//Checkboxes for the Get/Remove/Add actions
 		getBox = new JCheckBox("Get");
 		getBox.setSelected(false);
 		removeBox = new JCheckBox("Remove");
@@ -59,27 +66,29 @@ public class FireGUI implements ActionListener {
 		addBox = new JCheckBox("Add");
 		addBox.setSelected(false);
 
-		//Add checkboxes to a ButtonGroup so only one can can be selected		
+		//Add checkboxes to a ButtonGroup so only one can can be selected at a time
 		ButtonGroup actions = new ButtonGroup();
 		actions.add(getBox);
 		actions.add(removeBox);
 		actions.add(addBox);
 		
+		//Organize the checkboxes on its own panel in a gridlayout
 		JPanel checkPanel = new JPanel(new GridLayout(0, 1));
 		checkPanel.add(getBox);
 	    	checkPanel.add(removeBox);
 	    	checkPanel.add(addBox);
 		checkPanel.setBackground(new Color(0,0,0,0));
-			
-		
+
+		//Create a JPanel for the Enter button and set the action listener to this class
 		JPanel buttonPanel = new JPanel();
 		enterButton = new JButton ("ENTER");
 		buttonPanel.add(enterButton);
 		enterButton.addActionListener(this);
 		buttonPanel.add(enterButton);
-		buttonPanel.setOpaque(false);
+		buttonPanel.setOpaque(false); //set transparent
 
-		nameField = new JTextField( 10);
+		//Initialize the input text fields
+		nameField = new JTextField(10);
 		numberField = new JTextField(10);
 		lastName = new JTextField(10);
 		displayBox = new JTextArea("", 3,20);
@@ -88,10 +97,12 @@ public class FireGUI implements ActionListener {
 		lastName.setEditable(true);
 		displayBox.setEditable(false);
 
+		//Setup the gridbag layout with constraints
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.anchor = GridBagConstraints.WEST;
 		constraints.insets = new Insets(5, 5, 5, 5);
 
+		//The remaining lines of code organize the GUI components into a clean gridbag layout
 		constraints.gridy = 0;
 		constraints.gridx = 2;
 		newPanel.add(logoLabel,constraints);
@@ -142,100 +153,115 @@ public class FireGUI implements ActionListener {
 		frame.add( newPanel );
 		newPanel.setOpaque(false);
 
-		frame.setSize(500,500);
+		//Set the size of the frame and make it visible
+		frame.setSize(600,600);
 		frame.setLocation(100,100);
 		frame.setVisible(true);
 
 	}
 
+	/**
+          * Action handler for the "ENTER" button
+          * Checks the checkboxes and input fields and generates an apprporiate response
+          */
 	public void actionPerformed(ActionEvent e) { 
-	
+
+		//If none of the boxes are selected, show an alert dialog prompting user to select atleast one box		
 		if(!getBox.isSelected() && !removeBox.isSelected() && !addBox.isSelected()) {
 			JOptionPane.showMessageDialog( newPanel, "No box selected. Please select a box.");			
 		}			
 		
 		try {
 			
-		DatagramSocket serverSocket = new DatagramSocket(port);
-		InetAddress host=InetAddress.getByName(hostIP);
-		
-		if(getBox.isSelected() && !removeBox.isSelected() && !addBox.isSelected()) {
+			DatagramSocket serverSocket = new DatagramSocket(port);
+			InetAddress host=InetAddress.getByName(hostIP);
 
-			if (debugging) {System.out.println("get button pressed");}
-			if(nameField.getText().equals("") || lastName.getText().equals("")){
-				JOptionPane.showMessageDialog(newPanel, "Please enter the first and last name of the client");
-				serverSocket.close();				
-				return;
-			}
-			
-			String sendString = "get:"+ nameField.getText() + lastName.getText();
+			//If getBox is selected
+			if(getBox.isSelected() && !removeBox.isSelected() && !addBox.isSelected()) {
 
-		  	byte[] sendData = sendString.getBytes();
-		  	DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, host, port);
-		  	serverSocket.send(sendPacket); 
-		          	
-		  	byte[] receiveData = new byte[256];       	
-		    	DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-		    	if (debugging) {System.out.printf("Listening on udp:%s:%d%n",InetAddress.getLocalHost().getHostAddress(), port);}
-			serverSocket.setSoTimeout(3000);		    	
-			try {
-				serverSocket.receive(receivePacket);
+				if (debugging) {System.out.println("get button pressed");}
+				//Exit if any of the name fields are empty
+				if(nameField.getText().equals("") || lastName.getText().equals("")){
+					JOptionPane.showMessageDialog(newPanel, "Please enter the first and last name of the client");
+					serverSocket.close();				
+					return;
+				}
 
-				String dataReceived = new String(receivePacket.getData(), 0, receivePacket.getLength());
-			    	if (debugging) {System.out.println("RECEIVED: " + dataReceived);}                  	
-			    	displayBox.setText(dataReceived); 
-			} catch (SocketTimeoutException se) {
-				if (debugging) {System.out.printf("Failed to receive response from server");}
-			}                 	
+				/* Generate UDP Packet and send it to server */
+				String sendString = "get:"+ nameField.getText() + lastName.getText();
+
+		  		byte[] sendData = sendString.getBytes();
+		  		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, host, port);
+		  		serverSocket.send(sendPacket); 
+
+				/* Start listening for UDP packets expecting a response*/
+		  		byte[] receiveData = new byte[256];       	
+		    		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+		    		if (debugging) {System.out.printf("Listening on udp:%s:%d%n",InetAddress.getLocalHost().getHostAddress(), port);}
+				//Set the timeout for the socket receive so program doesn't hang forever
+				serverSocket.setSoTimeout(3000);		    	
+				try {
+					serverSocket.receive(receivePacket);
+					//If packet is received, parse it and set the displaybox with the appropriate text
+					String dataReceived = new String(receivePacket.getData(), 0, receivePacket.getLength());
+				    	if (debugging) {System.out.println("RECEIVED: " + dataReceived);}                  	
+				    	displayBox.setText(dataReceived); 
+				} catch (SocketTimeoutException se) {
+					if (debugging) {System.out.printf("Failed to receive response from server");}
+					se.printStackTrace();
+				}                 	
                   	
-		}
-		else if(!getBox.isSelected() && removeBox.isSelected() && !addBox.isSelected()){
-			
-			System.out.println("remove button pressed");
-			if(nameField.getText().equals("") || lastName.getText().equals("")){
-				JOptionPane.showMessageDialog(newPanel, "Please enter the first and last name of the client");
-				serverSocket.close();				
-				return;
 			}
-			
-	      	String sendString = "remove:"+ nameField.getText() + lastName.getText();
-	      	byte[] sendData = sendString.getBytes();
-          	DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, host, port);
-          	serverSocket.send(sendPacket); 
-		}
-		
-		else if(!getBox.isSelected() && !removeBox.isSelected() && addBox.isSelected()){
-			
-			System.out.println("Add button pressed");
-			if(nameField.getText().equals("") || lastName.getText().equals("")){
-				JOptionPane.showMessageDialog( newPanel, "Please enter the first and last name of the client");
-				serverSocket.close();				
-				return;
+			//If removeBox is selected
+			else if(!getBox.isSelected() && removeBox.isSelected() && !addBox.isSelected()){
+
+				if (debugging) {System.out.println("remove button pressed");}
+				//Only proceed if name fields are not empty, otherwise alert user
+				if(nameField.getText().equals("") || lastName.getText().equals("")){
+					JOptionPane.showMessageDialog(newPanel, "Please enter the first and last name of the client");
+					serverSocket.close();				
+					return;
+				}
+
+				//Send a UDP packet to server telling it to remove the inputted entry
+	      			String sendString = "remove:"+ nameField.getText() + lastName.getText();
+	      			byte[] sendData = sendString.getBytes();
+          			DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, host, port);
+          			serverSocket.send(sendPacket); 
 			}
-				
-			if(numberField.getText().equals("")){
-				JOptionPane.showMessageDialog( newPanel, "Please enter the phone number of the client");
-				serverSocket.close();				
-				return;
+			//If addBox is selected
+			else if(!getBox.isSelected() && !removeBox.isSelected() && addBox.isSelected()){
+
+				System.out.println("Add button pressed");
+				//If any of the name fields are empty, alert user and return
+				if(nameField.getText().equals("") || lastName.getText().equals("")){
+					JOptionPane.showMessageDialog( newPanel, "Please enter the first and last name of the client");
+					serverSocket.close();				
+					return;
+				}
+				//If number field is empty, alert user and return
+				if(numberField.getText().equals("")){
+					JOptionPane.showMessageDialog( newPanel, "Please enter the phone number of the client");
+					serverSocket.close();				
+					return;
+				}
+
+				//Send UDP packet containing the input fields to the server in order to register the user
+		      		String sendString = "add:"+ nameField.getText()+ ":" +lastName.getText() + ":" + numberField.getText();
+		  		byte[] sendData = sendString.getBytes();
+		  		DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, host, port);
+		  		serverSocket.send(sendPacket); 
 			}
-					
-		      	String sendString = "add:"+ nameField.getText()+ ":" +lastName.getText() + ":" + numberField.getText();
-		  	byte[] sendData = sendString.getBytes();
-		  	DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, host, port);
-		  	serverSocket.send(sendPacket); 
+			else
+			{	
+				//Should never reach here
+				continue;
+			}		
+			//Close the server socket after network operations are done
+			serverSocket.close();
+
 		}
-		else
-		{	
-			//Should never reach here	
-		}		
-		
-		serverSocket.close();
-
-	}
-		 catch(Exception ex){ ex.printStackTrace();
-
-
-        }
+		catch(Exception ex){ex.printStackTrace();}
 	     
 	}
 

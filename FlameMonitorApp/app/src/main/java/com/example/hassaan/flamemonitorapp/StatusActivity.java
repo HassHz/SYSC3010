@@ -25,10 +25,10 @@ import java.net.InetSocketAddress;
 
 public class StatusActivity extends AppCompatActivity {
 
-    Button logoutButton;
-    Button streamButton;
+    private Button logoutButton;
+    private Button streamButton;
 
-    UserSession userSession;
+    private UserSession userSession;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,12 +43,17 @@ public class StatusActivity extends AppCompatActivity {
         logoutButton.setOnClickListener(onLogoutButtonClickListener);
         streamButton.setOnClickListener(onStreamButtonClickListener);
 
+        //Check if background NotificationReceiver is running and start it if it's not
         if(!serviceRunning()){
             Intent service = new Intent(StatusActivity.this, NotificationReceiver.class);
             startService(service);
         }
     }
 
+    /**
+     * Checks to see if the background NotificationReceiver service is running
+     * @return boolean true if running, false if not
+     */
     private boolean serviceRunning() {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -59,6 +64,12 @@ public class StatusActivity extends AppCompatActivity {
         return false;
     }
 
+    /**
+     * Logout the user (clear SharedPreferences as well) from the application
+     * Also stops the background notification receiver service from running if it is running
+     *
+     * @return void
+     */
     View.OnClickListener onLogoutButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -66,6 +77,8 @@ public class StatusActivity extends AppCompatActivity {
                 userSession.logoutUser();
                 Intent service = new Intent(StatusActivity.this, NotificationReceiver.class);
                 stopService(service);
+
+                //Remove the activity from the stack so user can not see status page if not logged in
                 finish();
             } catch(Exception e) {
                 e.printStackTrace();
@@ -73,10 +86,16 @@ public class StatusActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * Launch Android's native android player with the webcam stream
+     *
+     * @return void
+     */
     View.OnClickListener onStreamButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            String mediaURL = "rtsp://172.17.78.98:8080/vid.mp4";
+            String mediaURL = "rtsp://172.17.68.111:8080/vid.mp4";
+
             Intent videoPlayer = new Intent(Intent.ACTION_VIEW, Uri.parse(mediaURL));
             startActivity(videoPlayer);
         }

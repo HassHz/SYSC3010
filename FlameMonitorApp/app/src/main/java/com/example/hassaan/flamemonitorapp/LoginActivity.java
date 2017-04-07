@@ -24,38 +24,50 @@ import java.net.UnknownHostException;
 
 public class LoginActivity extends AppCompatActivity {
 
-    Button connectButton;
-    EditText accountID;
-    EditText phoneNumber;
-    ImageButton help;
+    private Button connectButton;
+    private EditText accountID;
+    private EditText phoneNumber;
+    private ImageButton help;
 
-    UserSession userSession;
+    private UserSession userSession;
+
+    private boolean debugging = true;
+
+    private String serverIP = "182.17.68.111";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        //For network error on real device
+        //Ignore network on main thread warnings for the login activity
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        //Create an instance of the UserSession class for sharedpreferences
         userSession = new UserSession(getApplicationContext());
 
+        //Get the layout objects
         connectButton = (Button)findViewById(R.id.connect);
         accountID = (EditText)findViewById(R.id.accountID);
         phoneNumber = (EditText)findViewById(R.id.phoneNumber);
         help = (ImageButton)findViewById(R.id.help);
 
+        //Set listeners for the buttons
         connectButton.setOnClickListener(onConnectButtonClickListener);
         help.setOnClickListener(onHelpButtonClickListener);
     }
 
+    /**
+     * Calls the login() method to is clicked
+     *
+     * @return void
+     */
     View.OnClickListener onConnectButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            try{
+            try {
                 login();
             } catch(Exception e) {
                 e.printStackTrace();
@@ -63,6 +75,12 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * Creats an EasyDialog popup tool when the help question is clicked
+     *
+     * @param View The button clicked
+     * @return void
+     */
     View.OnClickListener onHelpButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -80,6 +98,14 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * Creates a new User Login Session (SharedPreferences) to store the user information upon login.
+     * Once login authentication is complete and successful, this activity is finished.
+     * If login authentication failed an alert dialog is displayed to the user
+     *
+     * @return void
+     * @throws Exception Failure to build alert dalog
+     */
     public void login() throws Exception {
 
         String id = accountID.getText().toString();
@@ -89,8 +115,10 @@ public class LoginActivity extends AppCompatActivity {
             if(authenticateLogin(id, number)) {
                 userSession.createUserLoginSession(id, number);
 
+                //Create a new intent for MainActivity if login is successful
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
+                //Remove this activity from stack so it is not reachable with the back button
                 finish();
             } else {
                 alertBuilder("Login Failed", "Incorrect Account ID or Phone Number");
@@ -102,11 +130,12 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    /* Build an alert with a title and message
-       @params String title,    The title of the alert
-       @params String message,  The alert message
-
-       @return void
+    /**
+     * Build an alert with a title and message
+     *
+     * @params String title,    The title of the alert
+     * @params String message,  The alert message
+     * @return void
      */
     private void alertBuilder(String title, String message) {
         new AlertDialog.Builder(this)
@@ -122,35 +151,44 @@ public class LoginActivity extends AppCompatActivity {
                 .show();
     }
 
-    /* Authenticate a login attempt by communicating login info with the server
-       @params String accountID, The ID of the user's account
-       @params String number,    The phone number of the user
+    /**
+     * Authenticate a login attempt by communicating login info with the server
+     *
+     * @params String accountID, The ID of the user's account
+     * @params String number,    The phone number of the user
+     *
+     * @return boolean           true if login success, false is failure.
      */
     public boolean authenticateLogin(String accountID, String number) {
+        int zeroOffset = 0;
+        int socketTimeoutTime = 3000; //in milliseconds
+        int port = 5050; //port to listen on
+        int maxByteReceiveSize = 1024;
+
         try {
-            InetAddress destination = InetAddress.getByName("172.17.78.98");
+            InetAddress destination = InetAddress.getByName(serverIP);
             DatagramSocket socket = new DatagramSocket();
             byte[] message = ("get:" + accountID + ":phone").getBytes();
-            DatagramPacket packet = new DatagramPacket(message, message.length, destination, 5050);
+            DatagramPacket packet = new DatagramPacket(message, message.length, destination, port);
             socket.send(packet);
 
             //Login timeouts in 3 seconds
-            socket.setSoTimeout(3000);
+            socket.setSoTimeout(socketTimeoutTime);
 
             //Receive confirmation message
-            byte[] receiveData = new byte[1024];
+            byte[] receiveData = new byte[maxByteReceiveSize];
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             while(true) {
                 try {
                     socket.receive(receivePacket);
-                    String userInfo = new String(receivePacket.getData(), 0, receivePacket.getLength());
-                    System.out.println("FROM SERVER:" + userInfo);
+                    String userInfo = new String(receivePacket.getData(), zeroOffset, receivePacket.getLength());
+                    if (debugging) System.out.println("FROM SERVER:" + userInfo);
                     if(userInfo.contains(number)) {
                         return true;
                     }
                 } catch (SocketTimeoutException e) {
-                    // timed out
-                    System.out.println("Login Failed - Server timed out." + e);
+                    // If socket times out log error message and return failure
+                    if (debugging) System.out.println("Login Failed - Server timed out." + e);
                     return false;
                 }
             }
