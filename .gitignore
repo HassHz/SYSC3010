@@ -48,3 +48,4 @@ Temporary Items
 
 #database file
 database.xml
+*.class
